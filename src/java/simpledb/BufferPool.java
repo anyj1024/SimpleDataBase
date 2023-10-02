@@ -26,6 +26,8 @@ public class BufferPool {
     constructor instead. */
     public static final int DEFAULT_PAGES = 50;
 
+    private final int numPages;
+    private final ConcurrentHashMap<Integer, Page> hashMap;
     /**
      * Creates a BufferPool that caches up to numPages pages.
      *
@@ -33,6 +35,8 @@ public class BufferPool {
      */
     public BufferPool(int numPages) {
         // some code goes here
+        this.numPages = numPages;
+        hashMap = new ConcurrentHashMap<>();
     }
     
     public static int getPageSize() {
@@ -41,12 +45,12 @@ public class BufferPool {
     
     // THIS FUNCTION SHOULD ONLY BE USED FOR TESTING!!
     public static void setPageSize(int pageSize) {
-    	BufferPool.pageSize = pageSize;
+        BufferPool.pageSize = pageSize;
     }
     
     // THIS FUNCTION SHOULD ONLY BE USED FOR TESTING!!
     public static void resetPageSize() {
-    	BufferPool.pageSize = DEFAULT_PAGE_SIZE;
+        BufferPool.pageSize = DEFAULT_PAGE_SIZE;
     }
 
     /**
@@ -67,7 +71,13 @@ public class BufferPool {
     public  Page getPage(TransactionId tid, PageId pid, Permissions perm)
         throws TransactionAbortedException, DbException {
         // some code goes here
-        return null;
+        Integer id = pid.hashCode();
+        if (!hashMap.containsKey(id)) {
+            DbFile dbFile = Database.getCatalog().getDatabaseFile(pid.getTableId());
+            Page page = dbFile.readPage(pid);
+            hashMap.put(id, page);
+        }
+        return hashMap.get(id);
     }
 
     /**
@@ -77,7 +87,7 @@ public class BufferPool {
      * calling it.
      *
      * @param tid the ID of the transaction requesting the unlock
-     * @param pid the ID of the page to unlock
+     * @param pid the ID of the page to unlock{}
      */
     public  void releasePage(TransactionId tid, PageId pid) {
         // some code goes here
