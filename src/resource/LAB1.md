@@ -8,7 +8,10 @@ TupleDesc 描述这些记录的结构(schema),它包含字段名称、类型等�
 
 
 Lab 1-2  
-主要实现了Catalog类
+主要实现了Catalog类  
+主要是一个key为Integer,value为Table的并发集合,Table类主要有DbFile/TableName/PrimaryKey属性.  
+catalog类描述的是数据库实例。包含了数据库现有的表信息以及表的schema信息。现在需要实现添加新表的功能，以及从特定的表中提取信息。提取信息时通过表对应的TupleDesc对象决定操作的字段类型和数量.  
+全局catalog是分配给整个SimpleDB进程的Catalog类一个实例，可以通过方法Database.getCatalog()获得，global buffer pool可以通过方法Database.getBufferPool()获得.
 
 
 Lab1-3  
