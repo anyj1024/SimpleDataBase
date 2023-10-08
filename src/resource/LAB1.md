@@ -18,3 +18,8 @@ Lab1-3
 主要实现了BufferPool类  
 buffer pool（在SimpleDB中是BufferPool类）负责将内存最近读过的物理页缓存下来。所有的读写操作通过buffer pool读写硬盘上不同文件，BufferPool里的numPages参数确定了读取的固定页数，在之后的lab中，需要实现淘汰机制(eviction policy)。在这个lab中，只需要实现构造器和BufferPool.getPage()方法，BufferPool应该存取最多numPages个物理页，当前lab中如果页的数量超过numPages，先不实现eviction policy，先扔出一个DbException错误。  
 Database类提供了一个静态方法Database.getBufferPool()，返回整个SimpleDB进程的BufferPool实例引用。
+
+lab1-4
+主要实现了HeapPageId、RecordId和HeapPage三个类  
+硬盘中包含很多文件，其中有的文件就是我们的HeapFile，一个HeapFile中存储了我们这个数据库中的所有表。文件由硬盘中的许多页(Page)构成，在我们的实现中，每个Page存储一个Table，当Page被加载到内存中后它就是一个表的形式。而每个页又包含很多slot，一个slot里有一个tuple。  
+一个HeapFile对象被安排成一组页面，每个页面由固定数量的字节组成，用于存储 tuple ，（由常数BufferPool.DEFAULT_PAGE_SIZE定义），包括一个头。在SimpleDB中，数据库中每个表都有一个HeapFile对象。HeapFile中的每个页面被安排为一组槽，每个槽可以容纳一个元组（SimpleDB中一个给定的表的元组都是相同大小的）。除了这些槽之外，每个页面都有一个头，由一个位图组成，每个元组槽有一个位。如果某个元组对应的位是1，表示该元组是有效的；如果是0，表示该元组是无效的（例如，已经被删除或者从未被初始化）。 HeapFile对象的页是HeapPage类型，实现了Page接口。页被存储在缓冲池中，但由HeapFile类来读写。
